@@ -1,6 +1,6 @@
 <template>
   <v-row justify="center" align="center">
-    Hola aqui va el login
+    Hola aqui va todo
   </v-row>
 </template>
 
