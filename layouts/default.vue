@@ -1,16 +1,12 @@
 <template>
-  <v-app dark>
+  <v-app>
     <v-main>
       <v-container>
-        <Nuxt />
+        <v-row width="100vw" style="height: 100vh;" align="center" justify="center">
+          <Nuxt />
+        </v-row>
       </v-container>
     </v-main>
-    <v-footer
-      :absolute="!fixed"
-      app
-    >
-      <span>&copy; {{ new Date().getFullYear() }}</span>
-    </v-footer>
   </v-app>
 </template>
 

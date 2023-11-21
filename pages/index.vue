@@ -1,11 +1,18 @@
 <template>
-  <v-row justify="center" align="center">
-    Hola aqui va todo
-  </v-row>
+ <ui-login /> 
 </template>
 
+
 <script>
+import uiLogin from '@/components/uiUsers/uilogin'
+import { Icon } from '../node_modules/bootstrap-icons/font/bootstrap-icons.css';
 export default {
-  name: 'IndexPage'
+  name: 'IndexPage',
+  components: {
+    uiLogin,
+    Icon
+  }
 }
 </script>
+
+
