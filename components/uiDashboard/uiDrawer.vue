@@ -28,7 +28,7 @@
         Link
         >
 
-            <v-btn style="width: 240px; height: 50px;">
+            <div style="width: 240px; height: 50px;" @click="pagina(item)">
                 <v-list-item-icon>
                     <v-icon >
                         {{ item.icon }}
@@ -39,7 +39,7 @@
                         {{ item.text }}
                     </v-list-item-title>
                 </v-list-item-content>
-            </v-btn>
+            </div>
         </v-list-item>
      </v-list>
     </v-navigation-drawer>
@@ -58,6 +58,25 @@ export default {
                { text: 'Pacientes', icon: 'mdi-account-group'},
                { text: 'Calendario', icon: 'mdi-checkbox-multiple-marked-circle'}
             ]
+        }
+    },
+    props: {
+        item: {
+            type: Object,
+            required: true
+        }
+    },
+    methods: {
+        pagina(clickItem){
+            console.log('Item clickeado ',clickItem)
+            switch (clickItem.id) {
+                case 1:
+                this.$router.push('/citas');
+                break;
+                case 2:
+                this.$router.push('/pagina2');
+                break;
+            }
         }
     }
    
