@@ -135,10 +135,10 @@ export default {
                     this.email=''
                     this.password=''
                     this.passwordVerifica=''
-                    this.$store.commit('setNewUser', true)
+                    //this.$store.commit('setNewUser', true)
                     this.$router.push('../dashboard')
                 } else if (content.alert === 'El usuario ya existe'){
-
+                    alert('El usuario ya existe')
                 }
                 console.log('$$$ response => ', content)
             } else {
