@@ -48,6 +48,8 @@
             <div class="search" style="display: flex;">
                 <div style="margin-top:10px; display:flex; width: 485px; height:60px; margin-left: 10px;">
                     <v-text-field
+                    v-model="search"
+                    @input="filterCitas"
                     label="Search patients"
                     class="ml-3"
                     type="text"
@@ -59,7 +61,7 @@
                     />
                 </div> 
                 <div style="display: flex; 
-                            margin-top:20px;
+                            margin-top:10px;
                             width: 43px;
                             height: 52px;">
                     <v-btn 
@@ -237,6 +239,27 @@
                     </v-dialog>
                 </div>
             </div>
+            <div class="tablaCitas">
+                <v-data-table
+                    :headers= "headers"
+                    :items = "filteredCitas"
+                    elevation="2"
+                >
+                    <template v-slot:item="{ item }">
+                        <tr>
+                        <td>{{ item.numero }}</td>
+                        <td>{{ item.nombre }}</td>
+                        <td>{{ item.telefono }}</td>
+                        <td>{{ item.email }}</td>
+                        <td>{{ item.date }}</td>
+                        <td>{{ item.time }}</td>
+                        <!-- Aplicar colores condicionales según el estatus -->
+                        <td :style="{ color: item.status === 'upcoming' ? '#4FB783' : '#DC143C' }">{{ item.status }}</td>
+                        <!-- Otras columnas... -->
+                        </tr>
+                    </template>
+                </v-data-table>
+            </div>
         </div>
     </div>
 </template>
@@ -245,9 +268,21 @@
 export default {
     data() {
       return {
+        headers: [
+            {text: 'Sr no.', align: 'center', sortable: true, value: 'numero', width:'70px'},
+            {text: 'Name', align: 'left', sortable: true, value: 'nombre'},
+            {text: 'Phone', align: 'left', sortable: true, value: 'telefono'},
+            {text: 'Email', align: 'left', sortable: true, value: 'email'},
+            {text: 'Date', align: 'left', sortable: true, value: 'date'},
+            {text: 'Time', align: 'left', sortable: true, value: 'time'},
+            {text: 'Status', align: 'left', sortable: false, value: 'status',}
+        ],
+        citas: [],
+        search:'',
         frmCita: false,
         dialog: false,
         genero: null,
+        numero:'',
         nombre: '',
         email: '',
         telefono: '',
@@ -260,42 +295,81 @@ export default {
         }
       }
     },
-    methods:{
-        async RegistrarCita () {
-            const frmCita= this.$refs.frmCita.validate()
-            if (this.frmCita) {
-                //Registramos la cita
-                const sendData = {
-                    nombre: this.nombre,
-                    email: this.email,
-                    telefono: this.telefono,
-                    edad: this.edad,
-                    genero: this.genero,
-                    date: this.date,
-                    time: this.time
-                }
-                const rawResponse = await fetch('http://localhost:5020/new-cita', {
-                    method: 'POST',
-                    headers: {
-                        'Accept': 'application/json',
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify(sendData)
-
-                });
-                const content = await rawResponse.json()
-                if(content.alert === 'success'){
-                    this.nombre=''
-                    this.email=''
-                    this.telefono=''
-                    this.edad=''
-                    this.genero=''
-                    this.date=''
-                    this.time=''
-                }
+    computed: {
+        newCita () {
+            return this.$store.state.newCita
+        },
+        filteredCitas() {
+      // Filtrar citas por día
+        return this.citas.filter(cita => cita.date.includes(this.search));
+        }
+    },
+    watch: {
+        newCita () {
+            if (this.newCita) {
+                this.citas = []
+                this.loadCitas()
+                this.$store.commit('setNewCita', false)
             }
         }
-    }
+    },
+    mounted () {
+        this.loadCitas()
+    },
+    methods:{
+        //Cargar citas a la tabla
+        async loadCitas () {
+            const citas = await fetch('http://localhost:5020/get-citas')
+            const data = await citas.json()
+            if(data.alert === 'success'){
+                this.citas = data.citas.map((cita,index) => ({...cita, numero: index + 1}))
+            }
+            console.log('$$ citas => ', citas, data)
+        },
+        //filtrar las citas 
+        filterCitas(){
+
+        },
+        //Registrar las citas
+        async RegistrarCita () {
+                const frmCita= this.$refs.frmCita.validate()
+                if (this.frmCita) {
+                    //Registramos la cita
+                    const sendData = {
+                        nombre: this.nombre,
+                        email: this.email,
+                        telefono: this.telefono,
+                        edad: this.edad,
+                        genero: this.genero,
+                        date: this.date,
+                        time: this.time
+                    }
+                    const rawResponse = await fetch('http://localhost:5020/new-cita', {
+                        method: 'POST',
+                        headers: {
+                            'Accept': 'application/json',
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify(sendData)
+
+                    });
+                    const content = await rawResponse.json()
+                    if(content.alert === 'success'){
+                        this.nombre=''
+                        this.email=''
+                        this.telefono=''
+                        this.edad=''
+                        this.genero=''
+                        this.date=''
+                        this.time=''
+                        this.dialog=false
+                        this.loadCitas()
+                    } else {
+                        alert('Ya existe una cita a la misma hora y mismo dia!')
+                    }
+                }
+        },
+    },
 }
 </script>
 <style>
@@ -331,4 +405,4 @@ export default {
 .cuerpo{
   background: var(--gray-shaded-white, #F6F6F6);
 }
-</style>
+</style> 

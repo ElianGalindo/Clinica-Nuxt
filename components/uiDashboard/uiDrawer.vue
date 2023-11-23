@@ -11,12 +11,19 @@
 
         <v-list>
             <div class="logo">
-                <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSj6dTMSl3M-7vHP8af_YsLpw9_ga64MZBZyg&usqp=CAU" alt="Logo Clinica">
+                <v-img :src="require('../../assets/logo.png')"></v-img>
             </div>
             <v-list-item>
-                <v-list-item-avatar>
-                       
-                </v-list-item-avatar>
+                <div>
+                    <div>
+                        <v-list-item-avatar style="width: 100px; height:100px; margin-left: 55px;">
+                            <v-img :src="require('../../assets/doctor.png')"></v-img>
+                        </v-list-item-avatar>
+                    </div>
+                    <div style="margin-left: 55px;">
+                        <p>Doctor Elian</p>
+                    </div>
+                </div>
                 
             </v-list-item>
         </v-list>
