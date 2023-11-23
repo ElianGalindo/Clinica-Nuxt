@@ -5,12 +5,10 @@
         <Nuxt />
       </v-main>
     </v-app>
-    </template>
+</template>
     
     <script>
     import uiDrawerVue from '~/components/uiDashboard/uiDrawer.vue'
-    
-    
       export default {
         components: {
           uiDrawerVue

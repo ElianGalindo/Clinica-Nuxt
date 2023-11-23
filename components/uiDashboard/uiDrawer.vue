@@ -1,4 +1,5 @@
 <template>
+    
     <v-navigation-drawer
      app
      color="dark Lighten-4"
@@ -28,7 +29,7 @@
         Link
         >
 
-            <div style="width: 240px; height: 50px;" @click="pagina(item)">
+            <div style="width: 240px; height: 50px; display: flex;" @click="pagina(item)">
                 <v-list-item-icon>
                     <v-icon >
                         {{ item.icon }}
@@ -43,8 +44,6 @@
         </v-list-item>
      </v-list>
     </v-navigation-drawer>
-        
-    
 </template>
 
 <script>
@@ -60,6 +59,7 @@ export default {
             ]
         }
     },
+    /*
     props: {
         item: {
             type: Object,
@@ -78,7 +78,7 @@ export default {
                 break;
             }
         }
-    }
+    }*/
    
 }
 </script>
