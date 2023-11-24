@@ -15,6 +15,15 @@
                             <v-form v-model="isValid" ref="formLogin">
                                 <v-row>
                                     <v-text-field
+                                    v-model="nombre"
+                                    placeholder="Escribe tu usuario"
+                                    label="Nombre"    
+                                    filled
+                                    :rules="[regla.vacio]" 
+                                    />
+                                </v-row>
+                                <v-row>
+                                    <v-text-field
                                     v-model="email"
                                     placeholder="Escribe tu usuario"
                                     label="Usuario"    
@@ -91,6 +100,7 @@
   export default {
   data() {
       return {
+          nombre: "",
           email: "",
           password: "",
           isValid: false,
@@ -107,6 +117,7 @@
     logeaUsuario() {
       const url = 'http://localhost:5020/login';
       const data = {
+        nombre: this.nombre,
         email: this.email,
         password: this.password,
       };
