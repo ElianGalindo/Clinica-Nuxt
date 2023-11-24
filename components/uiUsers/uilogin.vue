@@ -128,7 +128,7 @@
           if (data.alert === 'success') {
             // Inicio de sesión exitoso
             console.log('Inicio de sesión exitoso:', data);
-            this.$router.push('/dashboard')
+            this.$router.push('/navegacion')
           } else {
             // Manejar otras respuestas
             console.log('Error en el inicio de sesión:', data.alert);

@@ -36,7 +36,7 @@
         Link
         >
 
-            <div style="width: 240px; height: 50px; display: flex;" @click="pagina(item)">
+            <div style="width: 240px; height: 50px; display: flex;" @click="navigateTo(item.route)">
                 <v-list-item-icon>
                     <v-icon >
                         {{ item.icon }}
@@ -54,39 +54,26 @@
 </template>
 
 <script>
-
+import router from '../../router.js'
 export default {
+    router,
     data () {
         return {
             items: [
-               { text: 'Dashboard', icon: 'mdi-view-dashboard'},
-               { text: 'Citas', icon: 'mdi-book-clock'},
-               { text: 'Pacientes', icon: 'mdi-account-group'},
-               { text: 'Calendario', icon: 'mdi-checkbox-multiple-marked-circle'}
-            ]
-        }
-    },
-    /*
-    props: {
-        item: {
-            type: Object,
-            required: true
+               { text: 'Dashboard', icon: 'mdi-view-dashboard', route: '/inicio'},
+               { text: 'Citas', icon: 'mdi-book-clock', route: '/citas'},
+               { text: 'Pacientes', icon: 'mdi-account-group', route: '/pacientes'},
+               { text: 'Calendario', icon: 'mdi-checkbox-multiple-marked-circle', route: '/calendario'}
+            ],
+            
         }
     },
     methods: {
-        pagina(clickItem){
-            console.log('Item clickeado ',clickItem)
-            switch (clickItem.id) {
-                case 1:
-                this.$router.push('/citas');
-                break;
-                case 2:
-                this.$router.push('/pagina2');
-                break;
-            }
+        navigateTo(route) {
+            this.$router.push(route)
         }
-    }*/
-   
+    }
+
 }
 </script>
 
