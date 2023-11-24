@@ -29,6 +29,16 @@
                             <v-row align="center">
                                 <v-text-field
                                     class="ml-3"
+                                    type="text"
+                                    v-model="nombre"
+                                    placeholder="Nombre"
+                                    filled
+                                    :rules="[reglas.requerido]"
+                                />
+                            </v-row>
+                            <v-row align="center">
+                                <v-text-field
+                                    class="ml-3"
                                     type="email"
                                     v-model="email"
                                     placeholder="Email"
@@ -97,6 +107,7 @@ export default {
     data(){
         return{
             frmRegistro: false,
+            nombre: '',
             email: '',
             password: '',
             passwordVerifica: '',
@@ -117,6 +128,7 @@ export default {
             if (this.frmRegistro) {
                 //Registramos el usuario
                 const sendData = {
+                    nombre: this.nombre,
                     email: this.email,
                     password: this.password
                 }
@@ -132,11 +144,12 @@ export default {
                 });
                 const content = await rawResponse.json()
                 if (content.alert === 'success'){
+                    this.nombre=''
                     this.email=''
                     this.password=''
                     this.passwordVerifica=''
                     //this.$store.commit('setNewUser', true)
-                    this.$router.push('../dashboard')
+                    this.$router.push('../navegacion')
                 } else if (content.alert === 'El usuario ya existe'){
                     alert('El usuario ya existe')
                 }
