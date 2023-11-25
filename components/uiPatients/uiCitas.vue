@@ -46,7 +46,7 @@
                 </div>
             </div>
             <div class="search" style="display: flex;">
-                <div style="margin-top:10px; display:flex; width: 485px; height:60px; margin-left: 10px;">
+                <div style="margin-top:10px; display:flex; width: 485px; height:40px; margin-left: 10px;">
                     <v-text-field
                     v-model="search"
                     @input="filterCitas"
@@ -55,7 +55,7 @@
                     type="text"
                     solo
                     style="width: 485px;
-                           height: 60px;
+                           height: 40px;
                            flex-shrink: 0;
                            border-radius: 15px;"
                     />

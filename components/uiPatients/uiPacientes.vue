@@ -48,14 +48,17 @@
                 </div>
             </div>
             <div class="buscador" style="display:flex;">
-                <div style="margin-top:10px; display:flex; width: 485px; height:60px; margin-left: 10px;">
+                <div style="margin-top:10px; display:flex; width: 485px; height:40px; margin-left: 10px;">
+      <!------------input para buscar pacientes----------------->              
                     <v-text-field
                     label="Search patients"
+                    v-model="buscar"
+                    @input="filtrarPacientes"
                     class="ml-3"
                     type="text"
                     solo
                     style="width: 485px;
-                           height: 60px;
+                           height: 40px;
                            flex-shrink: 0;
                            border-radius: 15px;"
                     />
@@ -64,12 +67,13 @@
                             margin-top:10px;
                             width: 43px;
                             height: 52px;">
+    <!--------------Boton para abrir la ventana modal------------------------->                        
                     <v-btn
                     @click.stop="dialog=true" 
                     id="botonAddPaciente"
                     > Add new patient +
                     </v-btn>
-                    <!--Aqui va el modal de registro-->
+    <!--------------contenido de la ventana modal--------------------------------------------------------------------------------------------------------------->
                     <v-dialog v-model="dialog" max-width="800" style="height: 749px; border-radius: 17px; border: 2px solid var(--primary-green, #4FB783);">
                         <v-card>
                             <div style="display:flex; margin-left: 270px;">
@@ -81,8 +85,8 @@
                                 <div><v-btn style="width:10px; height:20px; border-radius: 20%; margin-top:25px; margin-left: 80px;" @click="dialog=false">X</v-btn></div>
                             </div>
                             <v-card-text>
-                            <!-- Contenido de tu ventana modal -->
-                                <v-form ref="frmCita" v-model="frmCita">
+        <!-------------------- inputs de la ventana modal ------------------------------------------->
+                                <v-form ref="frmRegistroPaciente" v-model="frmRegistroPaciente">
                                     <div style="display: flex; margin-top:20px;">
                                         <div>
                                             <v-row align="center">
@@ -176,7 +180,7 @@
                                                     <div><label for="" style="margin-left:18px;">Age</label></div>
                                                     <v-text-field
                                                         class="ml-3"
-                                                        type="int"
+                                                        type="number"
                                                         v-model="edad"
                                                         placeholder="Edad"
                                                         solo
@@ -192,9 +196,9 @@
                                                     <v-row>
                                                         <v-col>
                                                             <v-radio-group v-model="genero" row>
-                                                                    <v-radio label="Male" value="Hombre"></v-radio>
-                                                                    <v-radio label="Female" value="Mujer"></v-radio>
-                                                                    <v-radio label="Other" value="Otro"></v-radio>
+                                                                <v-radio label="Male" value="Hombre"></v-radio>
+                                                                <v-radio label="Female" value="Mujer"></v-radio>
+                                                                <v-radio label="Other" value="Otro"></v-radio>
                                                             </v-radio-group>
                                                             <span>Selected value: {{ genero }}</span>
                                                         </v-col>
@@ -261,28 +265,18 @@
                                         <v-row align="center">
                                             <div style="margin-top:20px;">
                                                 <div><label for="" style="margin-left:18px;">Reports / Files</label></div>
-                                                <v-text-field
-                                                    class="ml-3"
-                                                    type="time"
-                                                    v-model="time"
-                                                    solo
-                                                    style="width: 155px;
-                                                            height: 40px;
-                                                            border-radius: 15px;
-                                                            border: 1px solid var(--gray-light-gray, #DDD);
-                                                            background: var(--gray-whte, #FFF);"
-                                                    :rules="[reglas.requerido]"
-                                                />
+                                                <v-file-input v-model="documento" @change="handleFileUpload"/>
                                             </div>
                                         </v-row>
                                     </div>
                                 </v-form>
                             </v-card-text>
+              <!------------Boton para registrar paciente------------------------------------->              
                             <v-card-actions>
                             <v-btn
                                 color="#4FB783"
                                 style="width:434px; height:40px; border-radius:15px"
-                                @click="RegistrarCita"
+                                @click="RegistrarPaciente"
                             >
                                 Guardar
                             </v-btn>
@@ -290,6 +284,62 @@
                         </v-card>
                     </v-dialog>
                 </div>
+            </div>
+ <!-------Contenedor donde se mustran los pacientes existentes----------------------------->
+            <div class="tablaPacientes">
+     <!---------Tabla para mostrar los pacientes------------------------------------------->
+                <v-data-table
+                    :headers= "headers"
+                    :items = "filteredPacientes"
+                    elevation="2"
+                >
+                    <template v-slot:item="{ item }">
+                        <tr>
+                        <td>{{ item.numero }}</td>
+                        <td>{{ item.nombre }}</td>
+                        <td>{{ item.telefono }}</td>
+                        <td>{{ item.email }}</td>
+                        <td>{{ item.edad }}</td>
+                        <td>{{ item.tratamiento }}</td>
+<!---------------------Botones de las acciones para borrar y editar--------------------------------------------->
+                        <td> 
+                            <template>
+                                <v-tooltip top>
+            <!---------------------Boton de borrar paciente------------------>
+                                    <template v-slot:activator="{ on, attrs }">
+                                        <v-btn color="red" 
+                                            icon 
+                                            
+                                            v-bind="attrs"
+                                            v-on="on">
+                                            <v-icon>mdi-account-minus</v-icon>
+                                        </v-btn>
+                                    </template>
+                                    <span>
+                                        Borrar el paciente {{ item.nombre }}
+                                    </span>
+                                    </v-tooltip>
+                                    <v-tooltip top>
+                 <!---------------------Boton de editar paciente------------------>
+                                        <template v-slot:activator="{ on, attrs }">
+                                            <v-btn color="orange darken-1" 
+                                                icon 
+                                                
+                                                v-bind="attrs"
+                                                v-on="on">
+                                                <v-icon>mdi-account-edit</v-icon>
+                                            </v-btn>
+                                        </template>
+                                        <span>
+                                            Editar el paciente {{ item.nombre }}
+                                        </span>
+                                </v-tooltip>
+                            </template>
+                        </td>
+                        </tr>
+                    </template>
+                    
+                </v-data-table>
             </div>
         </div>
     </div>
@@ -299,10 +349,120 @@
 export default {
     data(){
         return{
+            headers: [
+            {text: 'Sr no.', align: 'center', sortable: true, value: 'numero', width:'70px'},
+            {text: 'Name', align: 'left', sortable: true, value: 'nombre'},
+            {text: 'Mobile', align: 'left', sortable: true, value: 'telefono'},
+            {text: 'Email', align: 'left', sortable: true, value: 'email'},
+            {text: 'Age', align: 'left', sortable: true, value: 'edad'},
+            {text: 'Treatmen', align: 'left', sortable: true, value: 'tratamiento'},
+            {text: 'Action', align: 'left', sortable: false, value: 'Acciones',}
+            ],
+            pacientes: [],
             reglas: {
                 requerido: value => !!value || 'Campo requerido!'
             },
-            dialog: false
+            dialog: false,
+            buscar: '',
+            documento: null,
+            frmRegistroPaciente: false,
+            numero:'',
+            nombre: '',
+            apellido: '',
+            email: '',
+            telefono: '',
+            nacimiento: '',
+            edad: '',
+            genero: '',
+            direccion: '',
+            tratamiento: '',
+            sangre: ''
+        }
+    },
+    computed: {
+        newPaciente () {
+            return this.$store.state.newPaciente
+        },
+        // Filtrar citas por correo-----------------------------------------------------------
+        filteredPacientes() {
+        return this.pacientes.filter(paciente => paciente.email.includes(this.buscar));
+        }
+    },
+    watch: {
+        newPaciente () {
+            if (this.newPaciente) {
+                this.pacientes = []
+                this.loadPacientes()
+                this.$store.commit('setNewPaciente', false)
+            }
+        }
+    },
+    mounted () {
+        this.loadPacientes()
+    },
+    methods: {
+        //Cargar pacientes en la tabla----------------------------------------------------------------
+        async loadPacientes () {
+            const pacientes = await fetch('http://localhost:5020/get-pacientes')
+            const data = await pacientes.json()
+            if(data.alert === 'success'){
+                this.pacientes = data.pacientes.map((paciente,index) => ({...paciente, numero: index + 1}))
+            }
+            console.log('$$ pacientes => ', pacientes, data)
+        },
+        //Registrar pacientes-------------------------------------------------------------------------
+        async RegistrarPaciente () {
+            const frmRegistroPaciente= this.$refs.frmRegistroPaciente.validate()
+            if (this.frmRegistroPaciente) {
+                //Registramos la cita
+                const sendData = {
+                    pacienteId: this.pacienteId,
+                    nombre: this.nombre,
+                    apellido: this.apellido,
+                    email: this.email,
+                    telefono: this.telefono,
+                    nacimiento: this.nacimiento,
+                    edad: this.edad,
+                    genero: this.genero,
+                    direccion: this.direccion,
+                    tratamiento: this.tratamiento,
+                    sangre: this.sangre,
+                   documento: this.documento
+                }
+                const rawResponse = await fetch('http://localhost:5020/new-paciente', {
+                    method: 'POST',
+                    headers: {
+                        'Accept': 'application/json',
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(sendData)
+
+                });
+                const content = await rawResponse.json()
+                if(content.alert === 'success'){
+                    this.nombre=''
+                    this.apellido=''
+                    this.email=''
+                    this.telefono=''
+                    this.nacimiento=''
+                    this.edad=''
+                    this.genero=''
+                    this.direccion=''
+                    this.tratamiento=''
+                    this.sangre=''
+                    this.dialog=false
+                    this.loadPacientes()
+                }else {
+                    alert('Ya existe un paciente con este correo!')
+                }
+            }
+        },
+        handleFileUpload(file) {
+      // Acciones cuando se carga un archivo
+            console.log('Archivo cargado:', file);
+        },
+        filtrarPacientes(){
+
         }
     }
 }
