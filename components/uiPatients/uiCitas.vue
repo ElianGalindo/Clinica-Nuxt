@@ -366,7 +366,7 @@ export default {
                         this.dialog=false
                         this.loadCitas()
                     } else {
-                        alert('Ya existe una cita a la misma hora y mismo dia!')
+                        alert('Ya existe una cita a la misma hora y mismo dia o el paciente no esta registrado!')
                     }
                 }
         },
