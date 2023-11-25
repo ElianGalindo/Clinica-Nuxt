@@ -39,14 +39,14 @@
                                flex-shrink: 0;
                                border-radius: 15px;
                                border: 1px solid var(--primary-green, #4FB783);
-                               background: var(--secondary-lightest-green, #EBFFF5);"
+                               background-color:#EBFFF5;"
                     >Today &nbsp;&nbsp;  <v-icon class="bi bi-caret-down-fill"></v-icon>
                     </v-btn> &nbsp;
                     <p>Appointments</p>
                 </div>
             </div>
             <div class="search" style="display: flex;">
-                <div style="margin-top:10px; display:flex; width: 485px; height:60px; margin-left: 10px;">
+                <div style="margin-top:10px; display:flex; width: 485px; height:40px; margin-left: 10px;">
                     <v-text-field
                     v-model="search"
                     @input="filterCitas"
@@ -55,7 +55,7 @@
                     type="text"
                     solo
                     style="width: 485px;
-                           height: 60px;
+                           height: 40px;
                            flex-shrink: 0;
                            border-radius: 15px;"
                     />
@@ -72,7 +72,8 @@
                                   width: 40px;
                                   height: 60px;
                                   border-radius:90% ;
-                                  background-color: #94e5bd;"
+                                  border: 1px solid var(--primary-green, #4FB783);
+                                background-color:#EBFFF5;"
                     > + 
                     </v-btn>
                     <!--Aqui va el modal de registro-->
