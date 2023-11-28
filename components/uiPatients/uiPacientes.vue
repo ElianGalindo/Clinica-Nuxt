@@ -303,13 +303,13 @@
                         <td>{{ item.tratamiento }}</td>
 <!---------------------Botones de las acciones para borrar y editar--------------------------------------------->
                         <td> 
-                            <template>
+                           <template>
+        <!---------------------Boton de borrar paciente------------------>
                                 <v-tooltip top>
-            <!---------------------Boton de borrar paciente------------------>
                                     <template v-slot:activator="{ on, attrs }">
-                                        <v-btn color="red" 
-                                            icon 
-                                            
+                                        <v-btn color="red"
+                                            icon
+                                            @click="deletePaciente(item.email)"
                                             v-bind="attrs"
                                             v-on="on">
                                             <v-icon>mdi-account-minus</v-icon>
@@ -319,12 +319,12 @@
                                         Borrar el paciente {{ item.nombre }}
                                     </span>
                                     </v-tooltip>
+                                        <!---------------------Boton de editar paciente------------------>
                                     <v-tooltip top>
-                 <!---------------------Boton de editar paciente------------------>
                                         <template v-slot:activator="{ on, attrs }">
-                                            <v-btn color="orange darken-1" 
-                                                icon 
-                                                
+                                            <v-btn color="orange darken-1"
+                                                icon
+                                                @click="editPaciente(item)"
                                                 v-bind="attrs"
                                                 v-on="on">
                                                 <v-icon>mdi-account-edit</v-icon>
@@ -334,19 +334,43 @@
                                             Editar el paciente {{ item.nombre }}
                                         </span>
                                 </v-tooltip>
-                            </template>
+                           </template>
                         </td>
                         </tr>
                     </template>
-                    
                 </v-data-table>
+                <v-dialog v-model="dialogDelete" max-width="290">
+                    <borrar-pacientes :email="email" @update:dialogDelete="handleDialogDelete"/>
+                </v-dialog>
+                <v-dialog v-model="dialogEdit" max-width="800">
+                    <editar-paciente 
+                        :nombre="nombre"
+                        :apellido="apellido"
+                        :email="email"
+                        :telefono="telefono"
+                        :nacimiento="nacimiento"
+                        :edad="edad"
+                        :genero="genero"
+                        :direccion="direccion"
+                        :tratamiento="tratamiento"
+                        :sangre="sangre"
+                        :documento="documento"
+                        @update:dialogEdit="handleDialogEdit"/>
+                </v-dialog>
             </div>
         </div>
     </div>
 </template>
 
 <script>
+import borrarPacientes from '../acciones/borrarPacientes.vue';
+import EditarPaciente from '../acciones/editarPaciente.vue';
+
 export default {
+    components: {
+        borrarPacientes,
+        EditarPaciente
+    },
     data(){
         return{
             headers: [
@@ -363,6 +387,8 @@ export default {
                 requerido: value => !!value || 'Campo requerido!'
             },
             dialog: false,
+            dialogDelete: false,
+            dialogEdit: false,
             buscar: '',
             documento: null,
             frmRegistroPaciente: false,
@@ -376,7 +402,8 @@ export default {
             genero: '',
             direccion: '',
             tratamiento: '',
-            sangre: ''
+            sangre: '',
+            usuario: ''
         }
     },
     computed: {
@@ -416,7 +443,7 @@ export default {
             if (this.frmRegistroPaciente) {
                 //Registramos la cita
                 const sendData = {
-                    pacienteId: this.pacienteId,
+                    
                     nombre: this.nombre,
                     apellido: this.apellido,
                     email: this.email,
@@ -463,7 +490,37 @@ export default {
         },
         filtrarPacientes(){
 
-        }
+        },
+        deletePaciente(email) {
+            this.email = email
+            this.dialogDelete = true
+        },
+        handleDialogDelete(value){
+            this.dialogDelete = value;
+            if (!value) {
+                this.loadPacientes();
+            }
+        },
+        editPaciente(paciente){
+            this.nombre = paciente.nombre
+            this.apellido = paciente.apellido
+            this.email = paciente.email
+            this.telefono = paciente.telefono
+            this.nacimiento = paciente.nacimiento
+            this.edad = paciente.edad
+            this.genero = paciente.genero
+            this.direccion = paciente.direccion
+            this.tratamiento = paciente.tratamiento
+            this.sangre = paciente.sangre
+            this.documento = paciente.documento
+            this.dialogEdit = true
+        },
+        handleDialogEdit(value){
+            this.dialogEdit = value;
+            if (!value) {
+                this.loadPacientes();
+            }
+        },
     }
 }
 </script>
