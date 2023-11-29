@@ -261,14 +261,14 @@
                                             </v-row>
                                         </div>
                                     </div>
-                                    <div style="margin-top:20px;">
+                                    <!--<div style="margin-top:20px;">
                                         <v-row align="center">
                                             <div style="margin-top:20px;">
                                                 <div><label for="" style="margin-left:18px;">Reports / Files</label></div>
                                                 <v-file-input v-model="documento" @change="handleFileUpload"/>
                                             </div>
                                         </v-row>
-                                    </div>
+                                    </div>-->
                                 </v-form>
                             </v-card-text>
               <!------------Boton para registrar paciente------------------------------------->              
@@ -294,7 +294,7 @@
                     elevation="2"
                 >
                     <template v-slot:item="{ item }">
-                        <tr>
+                        <tr @click="infPaciente(item)">
                         <td>{{ item.numero }}</td>
                         <td>{{ item.nombre }}</td>
                         <td>{{ item.telefono }}</td>
@@ -309,10 +309,10 @@
                                     <template v-slot:activator="{ on, attrs }">
                                         <v-btn color="red"
                                             icon
-                                            @click="deletePaciente(item.email)"
+                                            @click.stop="deletePaciente(item.email)"
                                             v-bind="attrs"
                                             v-on="on">
-                                            <v-icon>mdi-account-minus</v-icon>
+                                            <v-icon style="color:red;">mdi mdi-delete-circle-outline</v-icon>
                                         </v-btn>
                                     </template>
                                     <span>
@@ -324,10 +324,10 @@
                                         <template v-slot:activator="{ on, attrs }">
                                             <v-btn color="orange darken-1"
                                                 icon
-                                                @click="editPaciente(item)"
+                                                @click.stop="editPaciente(item)"
                                                 v-bind="attrs"
                                                 v-on="on">
-                                                <v-icon>mdi-account-edit</v-icon>
+                                                <v-icon style="color:blue;">mdi mdi-pencil-circle-outline</v-icon>
                                             </v-btn>
                                         </template>
                                         <span>
@@ -354,9 +354,25 @@
                         :direccion="direccion"
                         :tratamiento="tratamiento"
                         :sangre="sangre"
-                        :documento="documento"
-                        @update:dialogEdit="handleDialogEdit"/>
+                        @update:dialogEdit="handleDialogEdit"
+                        
+                        />
                 </v-dialog>
+                <v-dialog v-model="dialogInformation" max-width="63%">
+                    <info-paciente
+                        :nombre="nombre"
+                        :apellido="apellido"
+                        :email="email"
+                        :telefono="telefono"
+                        :nacimiento="nacimiento"
+                        :edad="edad"
+                        :genero="genero"
+                        :direccion="direccion"
+                        :tratamiento="tratamiento"
+                        :sangre="sangre"
+                        @update:dialogInformation="handleDialogInf"
+                    />
+                </v-dialog>         
             </div>
         </div>
     </div>
@@ -365,11 +381,13 @@
 <script>
 import borrarPacientes from '../acciones/borrarPacientes.vue';
 import EditarPaciente from '../acciones/editarPaciente.vue';
+import InfoPaciente from '../acciones/infoPaciente.vue';
 
 export default {
     components: {
         borrarPacientes,
-        EditarPaciente
+        EditarPaciente,
+        InfoPaciente
     },
     data(){
         return{
@@ -382,6 +400,7 @@ export default {
             {text: 'Treatmen', align: 'left', sortable: true, value: 'tratamiento'},
             {text: 'Action', align: 'left', sortable: false, value: 'Acciones',}
             ],
+            selectedPaciente: null,
             pacientes: [],
             reglas: {
                 requerido: value => !!value || 'Campo requerido!'
@@ -389,8 +408,9 @@ export default {
             dialog: false,
             dialogDelete: false,
             dialogEdit: false,
+            dialogInformation: false,
             buscar: '',
-            documento: null,
+            /*documento: null,*/
             frmRegistroPaciente: false,
             numero:'',
             nombre: '',
@@ -454,7 +474,7 @@ export default {
                     direccion: this.direccion,
                     tratamiento: this.tratamiento,
                     sangre: this.sangre,
-                   documento: this.documento
+                    /*documento: this.documento*/
                 }
                 const rawResponse = await fetch('http://localhost:5020/new-paciente', {
                     method: 'POST',
@@ -484,10 +504,10 @@ export default {
                 }
             }
         },
-        handleFileUpload(file) {
+       /* handleFileUpload(file) {
       // Acciones cuando se carga un archivo
             console.log('Archivo cargado:', file);
-        },
+        },*/
         filtrarPacientes(){
 
         },
@@ -502,6 +522,16 @@ export default {
             }
         },
         editPaciente(paciente){
+            this.dialogEdit = true
+        },
+        handleDialogEdit(value){
+            this.dialogEdit = value;
+            if (!value) {
+                this.loadPacientes();
+            }
+        },
+        infPaciente(paciente){
+            this.selectedPaciente = paciente
             this.nombre = paciente.nombre
             this.apellido = paciente.apellido
             this.email = paciente.email
@@ -512,11 +542,10 @@ export default {
             this.direccion = paciente.direccion
             this.tratamiento = paciente.tratamiento
             this.sangre = paciente.sangre
-            this.documento = paciente.documento
-            this.dialogEdit = true
+            this.dialogInformation = true
         },
-        handleDialogEdit(value){
-            this.dialogEdit = value;
+        handleDialogInf(value){
+            this.dialogInformation = value;
             if (!value) {
                 this.loadPacientes();
             }
@@ -579,4 +608,5 @@ export default {
         border: 1px solid var(--gray-light-gray, #DDD);
         background: var(--gray-whte, #FFF);
     }
+
 </style>

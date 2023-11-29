@@ -29,8 +29,11 @@
                 </v-btn>
             </div>
         </div>
+<!-------Dias citas------------------------------->
         <div class="dias"></div>
+<!------Calendario por hacer------------------------------>        
         <div class="calendario"></div>
+<!------Todo list---------------------------------------->
         <div class="toDo">
             <div>
                 <div style="margin-top: 20px; margin-left: 15px;"><p>Todo List</p></div>

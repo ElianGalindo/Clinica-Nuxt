@@ -184,14 +184,14 @@
                         </v-row>
                     </div>
                 </div>
-                <div style="margin-top:20px;">
+               <!-- <div style="margin-top:20px;">
                     <v-row align="center">
                         <div style="margin-top:20px;">
                             <div><label for="" style="margin-left:18px;">Reports / Files</label></div>
                             <v-file-input v-model="editUserData.documento" @change="handleFileUpload"/>
                         </div>
                     </v-row>
-                </div>
+                </div>-->
             </v-form>
         </v-card-text>
         <v-card-actions>
@@ -222,9 +222,9 @@ export default {
                 requerido: value => !!value || 'Campo requerido!'
             },
             frmRegistroPaciente: false,
-            documento: null,
             email:null,
-            editUserData: {}
+            editUserData: {},
+            
         }
     },
     props: {
@@ -238,6 +238,7 @@ export default {
         direccion: String,
         tratamiento: String,
         sangre: String,
+        
         
     },
     methods: {
@@ -254,9 +255,23 @@ export default {
                     'Accept': 'application/json',
                     'Content-Type': 'application/json',
                 },
-                body: JSON.stringify(sendData)
+                body: JSON.stringify(this.editUserData)
                 })
                 const res = await rawResponse.json()
+                if(res.alert === 'edited'){
+                    this.editUserData.nombre=''
+                    this.editUserData.apellido=''
+                    this.editUserData.email=''
+                    this.editUserData.telefono=''
+                    this.editUserData.nacimiento=''
+                    this.editUserData.edad=''
+                    this.editUserData.genero=''
+                    this.editUserData.direccion=''
+                    this.editUserData.tratamiento=''
+                    this.editUserData.sangre=''
+                    this.editUserData.dialog=false
+                    
+                }
                 this.$emit('update:dialogEdit', false)
                 console.log('$$$ res => ', res)
             }

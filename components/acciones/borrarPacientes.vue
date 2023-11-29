@@ -1,10 +1,10 @@
 <template>
     <v-card>
         <v-card-title class="text-h5">
-          Borrar usuarios
+          Borrar Paciente
         </v-card-title>
         <v-card-text>
-          Estas seguro que deseas borrar el usuario?
+          Estas seguro que deseas borrar el paciente?
         </v-card-text>
         <v-card-actions>
           <v-spacer></v-spacer>
@@ -50,6 +50,16 @@
             })
             const res = await rawResponse.json()
             if(res.alert === 'success'){
+              this.editUserData.nombre=''
+              this.editUserData.apellido=''
+              this.editUserData.email=''
+              this.editUserData.telefono=''
+              this.editUserData.nacimiento=''
+              this.editUserData.edad=''
+              this.editUserData.genero=''
+              this.editUserData.direccion=''
+              this.editUserData.tratamiento=''
+              this.editUserData.sangre=''
               this.$emit('update:dialogDelete', false)
             }
           },
