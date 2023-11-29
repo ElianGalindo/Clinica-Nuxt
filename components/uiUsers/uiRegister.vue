@@ -40,7 +40,7 @@
                                 <v-text-field
                                     class="ml-3"
                                     type="email"
-                                    v-model="email"
+                                    v-model="emailD"
                                     placeholder="Email"
                                     filled
                                     :rules="[reglas.requerido]"
@@ -108,7 +108,7 @@ export default {
         return{
             frmRegistro: false,
             nombre: '',
-            email: '',
+            emailD: '',
             password: '',
             passwordVerifica: '',
             reglas: {
@@ -129,7 +129,7 @@ export default {
                 //Registramos el usuario
                 const sendData = {
                     nombre: this.nombre,
-                    email: this.email,
+                    emailD: this.emailD,
                     password: this.password
                 }
 
@@ -145,7 +145,7 @@ export default {
                 const content = await rawResponse.json()
                 if (content.alert === 'success'){
                     this.nombre=''
-                    this.email=''
+                    this.emailD=''
                     this.password=''
                     this.passwordVerifica=''
                     //this.$store.commit('setNewUser', true)

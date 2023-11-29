@@ -24,7 +24,7 @@
                                 </v-row>
                                 <v-row>
                                     <v-text-field
-                                    v-model="email"
+                                    v-model="emailD"
                                     placeholder="Escribe tu usuario"
                                     label="Usuario"    
                                     filled
@@ -101,7 +101,7 @@
   data() {
       return {
           nombre: "",
-          email: "",
+          emailD: "",
           password: "",
           isValid: false,
           regla: {
@@ -118,7 +118,7 @@
       const url = 'http://localhost:5020/login';
       const data = {
         nombre: this.nombre,
-        email: this.email,
+        emailD: this.emailD,
         password: this.password,
       };
 
