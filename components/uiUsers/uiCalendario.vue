@@ -1,5 +1,5 @@
 <template>
-    <div class="cuerpo">
+    <div class="cuerpo" style="height:890px;">
         <div class="header" style="display:flex;background:var(--gray-whte, #FFF); height:78px;">
             <div class="ubicacion" style="display:flex; margin-top:20px; margin-left: 10px;">
                 <p style="color: #000;
@@ -29,38 +29,69 @@
                 </v-btn>
             </div>
         </div>
-<!-------Dias citas------------------------------->
-        <div class="dias">
-            <v-calendar    
-                v-model="selectedDate" :attributes="dateAttributes"
-            ></v-calendar>
-        </div>
-<!------Calendario por hacer------------------------------>        
-        <div class="calendario">
-
-        </div>
-<!------Todo list---------------------------------------->
-        <div class="toDo">
+        <div style="display:flex;">
             <div>
-                <div style="margin-top: 20px; margin-left: 15px;"><p>Todo List</p></div>
-                <div style="display: flex; margin-top: 15px; margin-left: 15px;" >
-                    <div style="width: 250px;">
-                        <v-text-field solo v-model="nuevaTarea" @keyup.enter="agregarTarea" placeholder="Nueva tarea"/>
+       <!-------Calendario de las citas------------------------------->
+                <div class="calendario">
+                    <div>
+                        <div style="width: 680px; margin-left:10px; margin-top:20px;">
+                            <v-calendar v-model="selectedDate" :events="eventos">
+                                <v-date-picker mode="single" ></v-date-picker>
+                            </v-calendar>
+                        </div>
+                        <!-- mostrar citas despues de dar click al dia -->
+                        <div v-if="selectedDate" class="citasDia">
+                            <h2 style="text-align:center">Citas para {{ selectedDate }}</h2>
+                            <!-- Mostrar la citas -->
+                            <ul style="text-align:center;">
+                                <li v-for="cita in citas" :key="cita.id">
+                                {{ cita.date }} - {{ cita.time }}: {{ cita.motivo }}
+                                </li>
+                            </ul>
+                        </div>
                     </div>
-                    <div style="margin-left:20px; margin-top:20px;"><button @click="agregarTarea">Agregar</button></div>
                 </div>
-                <ul>
-                <li v-for="(tarea, index) in tareas" :key="index" :style="{ textDecoration: tarea.hecho ? 'line-through' : 'none' }">
-                    <input type="checkbox" v-model="tarea.hecho" />
-                    {{ tarea.texto }}
-                </li>
-                </ul>
+                <!------Linea del tiempo------------------------------>
+                <div class="lineaTiempo">
+                    <div style="padding: 10px">
+                        <v-timeline>
+                            <v-timeline-item v-for="(dia, index) in dias" :key="index">
+                                <!-- Aquí pones la información de la cita, por ejemplo: -->
+                                <div :style="{ backgroundColor: getCitaColor(index) } "
+                                      style="border-radius:10px; height:auto;"
+                                > 
+                                    <p>{{dia.date}} - {{ dia.time }}</p>
+                                    <p>{{ dia.motivo }}</p>
+                                </div>
+                            </v-timeline-item>
+                        </v-timeline>
+                    </div>
+                </div>
+            </div>
+            <!------Todo list---------------------------------------->
+            <div class="toDo">
+                <div>
+                    <div style="margin-top: 20px; margin-left: 15px;"><p>Todo List</p></div>
+                    <div style="display: flex; margin-top: 15px; margin-left: 15px;" >
+                        <div style="width: 250px;">
+                            <v-text-field solo v-model="nuevaTarea" @keyup.enter="agregarTarea" placeholder="Nueva tarea"/>
+                        </div>
+                        <div style="margin-left:20px; margin-top:20px;"><button @click="agregarTarea">Agregar</button></div>
+                    </div>
+                    <ul>
+                    <li v-for="(tarea, index) in tareas" :key="index" :style="{ textDecoration: tarea.hecho ? 'line-through' : 'none' }">
+                        <input type="checkbox" v-model="tarea.hecho" />
+                        {{ tarea.texto }}
+                    </li>
+                    </ul>
+                </div>
             </div>
         </div>
     </div>
 </template>
 
 <script>
+const coloresPersonalizados = ['#E3F2FD', '#FFF9C4', '#FFCDD2', '#E8F5E9','#E1BEE7']
 export default{
     
     data() {
@@ -68,41 +99,39 @@ export default{
             selectedDate: null, // Puedes inicializarlo con la fecha actual o la fecha de la cita seleccionada
             citas: [],
             nuevaTarea: "",
-            tareas: []
+            tareas: [],
+            eventos: [],
+            dias:[]
         }
     },
-    computed: {
-        dateAttributes() {
-      // Itera sobre las citas y crea un objeto con atributos para resaltar los días en el calendario
-            const attributes = {};
-            this.citas.forEach((cita) => {
-                if(cita.date){
-                    const formattedDate = cita.date.split('/').reverse().join('-')
-                    attributes[formattedDate] = {
-                        class: 'cita-marked',
-                        content: cita.motivo, // Puedes personalizar el contenido que se mostrará en el calendario
-                    };
-                }
-            });
-            return attributes;
-        },
-    },
-    created(){
-        this.fetchCitas();
+    mounted(){
+        this.fetchCitas()
+        this.fetchLinea()
     },
     methods: {
+        //ToDo------------------------------
         agregarTarea() {
             if (this.nuevaTarea.trim() !== "") {
                 this.tareas.push({ texto: this.nuevaTarea, hecho: false });
                 this.nuevaTarea = "";
             }
         },
+        //Calendario ------------------------
         async fetchCitas() {
             try {
                 const response = await fetch('http://localhost:5020/get-calendario');
                 const data = await response.json();
                 if (data.alert === 'success') {
-                this.citas = data.citas;
+                    this.citas = data.citas.filter(cita => {
+                        return cita.date === this.selectedDate
+                    })
+
+                   this.eventos = data.citas.map((cita) => ({
+                        start: cita.date,
+                        end: cita.date,
+                        color: 'green', // Puedes cambiar el color según tus preferencias
+                    }));
+                    
                 } else {
                 console.error('Error al obtener citas:', data.error);
                 }
@@ -110,22 +139,46 @@ export default{
                 console.error('Error de red:', error);
             }
         },
+        //Linea del tiempo-------------------
+        async fetchLinea() {
+            try {
+                const response = await fetch('http://localhost:5020/get-dias');
+                const data = await response.json();
+                if (data.alert === 'success') {
+                // Ordena las citas por hora antes de asignarlas a la variable citas
+                    this.dias = data.citas.sort((a, b) => a.date.localeCompare(b.date));
+                } else {
+                    console.error('Error al obtener citas:', data.error);
+                }
+            } catch (error) {
+                console.error('Error de red:', error);
+            }
+        },
+        //Paleta de colore------------------
+        getCitaColor(index) {
+            //Asigna un color de los que tengo en el arreglo
+            const colorIndex = index % coloresPersonalizados.length;
+            return coloresPersonalizados[colorIndex];
+        },
     },
+    watch: {
+        selectedDate: 'fetchCitas',
+    }
 }
 </script>
 <style>
-    .dias{
+    .calendario{
         width: 705px;
-        height: 226px;
+        height: auto;
         flex-shrink: 0;
         border-radius: 15px;
         background: var(--gray-whte, #FFF);
         margin-top: 20px;
         margin-left: 20px;
     }
-    .calendario {
+    .lineaTiempo {
         width: 705px;
-        height: 752px;
+        height: auto;
         flex-shrink: 0;
         border-radius: 15px;
         background: var(--gray-whte, #FFF);
@@ -134,12 +187,12 @@ export default{
     }
     .toDo{
         width: 425px;
-        height: 765px;
+        height: 760px;
         flex-shrink: 0;
         border-radius: 15px;
         background: var(--gray-whte, #FFF);
-        margin-left: 750px;
-        margin-top: -1012px;
+        margin-left: 20px;
+        margin-top: 20px;
     }
     .app {
         font-family: Avenir, Helvetica, Arial, sans-serif;
@@ -160,7 +213,15 @@ export default{
     li {
         margin-bottom: 5px;
     }
-    .cita-marked {
-        background-color: #ee3936;
+    .has-cita {
+        background-color: red; /* Puedes cambiar el color según tus preferencias */
+        color: white; /* Puedes ajustar el color del texto según tus preferencias */
     }
-        </style>
+    .citasDia {
+        background-color: rgb(171, 226, 171);
+        width:400px;
+        margin-left: 10px;
+        margin-top: 20px;
+        border-radius: 10px;
+    }
+</style>
