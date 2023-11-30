@@ -30,9 +30,15 @@
             </div>
         </div>
 <!-------Dias citas------------------------------->
-        <div class="dias"></div>
+        <div class="dias">
+            <v-calendar    
+                v-model="selectedDate" :attributes="dateAttributes"
+            ></v-calendar>
+        </div>
 <!------Calendario por hacer------------------------------>        
-        <div class="calendario"></div>
+        <div class="calendario">
+
+        </div>
 <!------Todo list---------------------------------------->
         <div class="toDo">
             <div>
@@ -56,11 +62,33 @@
 
 <script>
 export default{
+    
     data() {
         return {
+            selectedDate: null, // Puedes inicializarlo con la fecha actual o la fecha de la cita seleccionada
+            citas: [],
             nuevaTarea: "",
             tareas: []
         }
+    },
+    computed: {
+        dateAttributes() {
+      // Itera sobre las citas y crea un objeto con atributos para resaltar los días en el calendario
+            const attributes = {};
+            this.citas.forEach((cita) => {
+                if(cita.date){
+                    const formattedDate = cita.date.split('/').reverse().join('-')
+                    attributes[formattedDate] = {
+                        class: 'cita-marked',
+                        content: cita.motivo, // Puedes personalizar el contenido que se mostrará en el calendario
+                    };
+                }
+            });
+            return attributes;
+        },
+    },
+    created(){
+        this.fetchCitas();
     },
     methods: {
         agregarTarea() {
@@ -68,7 +96,20 @@ export default{
                 this.tareas.push({ texto: this.nuevaTarea, hecho: false });
                 this.nuevaTarea = "";
             }
-        }
+        },
+        async fetchCitas() {
+            try {
+                const response = await fetch('http://localhost:5020/get-calendario');
+                const data = await response.json();
+                if (data.alert === 'success') {
+                this.citas = data.citas;
+                } else {
+                console.error('Error al obtener citas:', data.error);
+                }
+            } catch (error) {
+                console.error('Error de red:', error);
+            }
+        },
     },
 }
 </script>
@@ -119,4 +160,7 @@ export default{
     li {
         margin-bottom: 5px;
     }
-</style>
+    .cita-marked {
+        background-color: #ee3936;
+    }
+        </style>
