@@ -225,6 +225,22 @@
                                             </v-row>
                                         </div>
                                     </div>
+                                    <div style="margin-left:17px; margin-top: 30px;">
+                                        <h4>Book an appointment for</h4>
+                                            <div style="margin-top:-20px;">
+                                                <v-section>
+                                                    <v-row>
+                                                        <v-col>
+                                                            <v-radio-group v-model="motivo" row>
+                                                                    <v-radio label="checkup" value="Chequeo medico"></v-radio>
+                                                                    <v-radio label="Surgery" value="Cirugia"></v-radio>
+                                                            </v-radio-group>
+                                                            <span>Selected value: {{ motivo }}</span>
+                                                        </v-col>
+                                                    </v-row>
+                                                </v-section>
+                                            </div>
+                                    </div>
                                 </v-form>
                             </v-card-text>
                             <v-card-actions>
@@ -291,6 +307,7 @@ export default {
         genero: '',
         date: '',
         time: '',
+        motivo: '',
         reglas: {
             requerido: value => !!value || 'Campo requerido!'
         }
@@ -343,7 +360,8 @@ export default {
                         edad: this.edad,
                         genero: this.genero,
                         date: this.date,
-                        time: this.time
+                        time: this.time,
+                        motivo: this.motivo
                     }
                     const rawResponse = await fetch('http://localhost:5020/new-cita', {
                         method: 'POST',
@@ -363,6 +381,7 @@ export default {
                         this.genero=''
                         this.date=''
                         this.time=''
+                        this.motivo=''
                         this.dialog=false
                         this.loadCitas()
                     } else {
